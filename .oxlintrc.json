@@ -239,7 +239,7 @@
     // oxlint ignores "as-needed" (v1.49.0+); airbnb uses plain "error" anyway. Always require radix.
     "radix": "error",
     "react/jsx-no-target-blank": "error",
-    "react/jsx-no-useless-fragment": "error",
+    "react/jsx-no-useless-fragment": ["error", {"allowExpressions": true}],
     "react/no-unescaped-entities": "warn",
     "react/rules-of-hooks": "error",
     "require-await": "warn",
