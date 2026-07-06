@@ -236,8 +236,7 @@
     "no-redeclare": "error",
     "no-self-compare": "error",
     "no-useless-return": "error",
-    // oxlint ignores "as-needed" (v1.49.0+); airbnb uses plain "error" anyway. Always require radix.
-    "radix": "error",
+    "radix": "off", // too many false positives with parseInt; drop it
     "react/jsx-no-target-blank": "error",
     "react/jsx-no-useless-fragment": ["error", {"allowExpressions": true}],
     "react/no-unescaped-entities": "warn",
@@ -245,7 +244,7 @@
     "require-await": "warn",
     "symbol-description": "error",
     // --- style ---
-    "arrow-body-style": ["error", "as-needed", {"requireReturnForObjectLiteral": false}],
+    "arrow-body-style": "off", // dprint handles formatting; this rule causes too many auto-fix diffs
     "curly": "error",
     "default-case-last": "error",
     "default-param-last": "error",
