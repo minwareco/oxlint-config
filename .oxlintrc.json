@@ -1,0 +1,390 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // Plugins enabled org-wide. `plugins` OVERWRITES oxlint defaults, so we list every
+  // plugin needed by the shared rules. A consuming repo MUST repeat this list (plus any
+  // extras) in its own config, because a child `plugins` array overwrites the parent's.
+  // Deliberately omitted from the base:
+  //   - jsx-a11y : a11y was OFF in @minware/eslint-config. ui-minware opts back in by adding
+  //               "jsx-a11y" to its plugins list and enabling the rules it wants.
+  //   - nextjs   : Next.js rules (e.g. no-img-element) fire on ANY JSX, not just Next repos,
+  //               so only app adds "nextjs".
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "jest"
+  ],
+  // Type-aware rules (typescript/dot-notation etc.) are active in the rules section below.
+  // They require oxlint-tsgolint (installed as a peer dependency) and are activated by this
+  // option. Consumers do NOT need to add options.typeAware themselves.
+  "options": {
+    "typeAware": true
+  },
+  // Disable the default-enabled correctness category to avoid activating oxlint-native rules
+  // (e.g. restrict-template-expressions) that have no ESLint equivalent. All rules are
+  // explicitly configured below. This matches @oxlint/migrate's recommendation.
+  "categories": {
+    "correctness": "off"
+  },
+  "rules": {
+    // ===================================================================================
+    // SUPPORTED — airbnb + @minware rules that oxlint implements, at their original
+    // severity. Options are carried over only where @minware/eslint-config customised them.
+    // ===================================================================================
+    // --- correctness ---
+    "for-direction": "error",
+    "no-async-promise-executor": "error",
+    "no-caller": "error",
+    "no-class-assign": "error",
+    "no-compare-neg-zero": "error",
+    "no-cond-assign": "error",
+    "no-constant-condition": "warn",
+    "no-control-regex": "error",
+    "no-debugger": "warn",
+    "no-delete-var": "error",
+    "no-dupe-class-members": "error",
+    "no-dupe-else-if": "error",
+    "no-duplicate-case": "error",
+    "no-empty-character-class": "error",
+    "no-empty-pattern": "error",
+    "no-eval": "error",
+    "no-ex-assign": "error",
+    "no-extra-boolean-cast": "error",
+    "no-global-assign": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-iterator": "error",
+    "no-loss-of-precision": "error",
+    "no-misleading-character-class": "error",
+    "no-nonoctal-decimal-escape": "error",
+    "no-self-assign": "error",
+    "no-shadow-restricted-names": "error",
+    "no-sparse-arrays": "error",
+    "no-unsafe-finally": "error",
+    "no-unsafe-optional-chaining": ["error", {"disallowArithmeticOperators": true}],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": false,
+        "allowTernary": false,
+        "allowTaggedTemplates": false
+      }
+    ],
+    "no-unused-labels": "error",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "no-useless-backreference": "error",
+    "no-useless-catch": "error",
+    "no-useless-escape": "error",
+    "no-useless-rename": "error",
+    "no-with": "error",
+    "react/exhaustive-deps": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react/no-did-update-set-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-render-return-value": "error",
+    "react/no-string-refs": "error",
+    "react/no-this-in-sfc": "error",
+    "react/no-will-update-set-state": "error",
+    "react/void-dom-elements-no-children": "error",
+    "require-yield": "error",
+    "use-isnan": "error",
+    // --- suspicious ---
+    "block-scoped-var": "error",
+    "import/no-absolute-path": "error",
+    "import/no-named-as-default": "error",
+    "import/no-self-import": "error",
+    "no-extend-native": "error",
+    "no-extra-bind": "error",
+    "no-implied-eval": "error",
+    "no-new": "error",
+    "no-shadow": "warn",
+    "no-underscore-dangle": "off", // codebase uses _prefix convention for private/internal identifiers
+    "no-unexpected-multiline": "error",
+    "no-unneeded-ternary": "error",
+    "no-useless-concat": "error",
+    "no-useless-constructor": "error",
+    "react/jsx-no-comment-textnodes": "error",
+    "react/jsx-no-script-url": "error",
+    "react/no-namespace": "error",
+    "react/no-unstable-nested-components": "error",
+    "react/style-prop-object": "error",
+    // --- perf ---
+    "react/jsx-no-constructed-context-values": "error",
+    "react/no-array-index-key": "warn",
+    // --- restriction ---
+    "default-case": "error",
+    "import/extensions": "error",
+    "import/no-amd": "error",
+    "import/no-cycle": "warn",
+    "import/no-dynamic-require": "error",
+    "import/no-webpack-loader-syntax": "error",
+    "no-alert": "warn",
+    "no-bitwise": "error",
+    "no-console": "warn",
+    "no-empty": "error",
+    "no-empty-function": [
+      "error",
+      {
+        "allow": [
+          "arrowFunctions",
+          "functions",
+          "methods"
+        ]
+      }
+    ],
+    "no-param-reassign": [
+      "warn",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "acc",
+          "accumulator",
+          "e",
+          "ctx",
+          "context",
+          "req",
+          "request",
+          "res",
+          "response",
+          "$scope",
+          "staticContext"
+        ]
+      }
+    ],
+    "no-proto": "error",
+    "no-regex-spaces": "error",
+    // Only the two meaningful cross-environment globals; the full airbnb browser-globals list
+    // was dropped because oxlint fires on local variable names (e.g. destructured `name`) rather
+    // than actual global accesses — a known oxlint false-positive with this rule.
+    "no-restricted-globals": [
+      "error",
+      {"name": "isFinite", "message": "Use Number.isFinite instead https://github.com/airbnb/javascript#standard-library--isfinite"},
+      {"name": "isNaN", "message": "Use Number.isNaN instead https://github.com/airbnb/javascript#standard-library--isnan"}
+    ],
+    "no-restricted-properties": [
+      "error",
+      {"object": "arguments", "property": "callee", "message": "arguments.callee is deprecated"},
+      {"object": "global", "property": "isFinite", "message": "Please use Number.isFinite instead"},
+      {"object": "self", "property": "isFinite", "message": "Please use Number.isFinite instead"},
+      {"object": "window", "property": "isFinite", "message": "Please use Number.isFinite instead"},
+      {"object": "global", "property": "isNaN", "message": "Please use Number.isNaN instead"},
+      {"object": "self", "property": "isNaN", "message": "Please use Number.isNaN instead"},
+      {"object": "window", "property": "isNaN", "message": "Please use Number.isNaN instead"},
+      {"property": "__defineGetter__", "message": "Please use Object.defineProperty instead."},
+      {"property": "__defineSetter__", "message": "Please use Object.defineProperty instead."},
+      {"object": "Math", "property": "pow", "message": "Use the exponentiation operator (**) instead."}
+    ],
+    "no-sequences": "error",
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true,
+        "variables": false,
+        "allowNamedExports": false,
+        "enums": false,
+        "typedefs": false
+      }
+    ],
+    "no-var": "error",
+    "no-void": ["error", { "allowAsStatement": true }],
+    "react/button-has-type": "error",
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [
+          ".jsx",
+          ".tsx"
+        ]
+      }
+    ],
+    "react/no-danger": "warn",
+    "react/no-unknown-property": "error",
+    "unicode-bom": "error",
+    // --- pedantic ---
+    "array-callback-return": "error",
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "max-classes-per-file": "error",
+    "no-array-constructor": "error",
+    "no-case-declarations": "error",
+    "no-constructor-return": "error",
+    "no-else-return": "error",
+    "no-fallthrough": "error",
+    "no-inner-declarations": "error",
+    "no-lonely-if": "error",
+    "no-loop-func": "error",
+    "no-new-wrappers": "error",
+    "no-promise-executor-return": "error",
+    "no-prototype-builtins": "error",
+    "no-redeclare": "error",
+    "no-self-compare": "error",
+    "no-useless-return": "error",
+    // oxlint ignores "as-needed" (v1.49.0+); airbnb uses plain "error" anyway. Always require radix.
+    "radix": "error",
+    "react/jsx-no-target-blank": "error",
+    "react/jsx-no-useless-fragment": "error",
+    "react/no-unescaped-entities": "warn",
+    "react/rules-of-hooks": "error",
+    "require-await": "warn",
+    "symbol-description": "error",
+    // --- style ---
+    "arrow-body-style": ["error", "as-needed", {"requireReturnForObjectLiteral": false}],
+    "curly": "error",
+    "default-case-last": "error",
+    "default-param-last": "error",
+    "func-names": "warn",
+    "grouped-accessor-pairs": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    "import/no-mutable-exports": "error",
+    "import/no-named-default": "error",
+    // capIsNew: false matches airbnb — capitalized functions don't require new (e.g. BigInt, HOCs)
+    "new-cap": ["error", {
+      "newIsCap": true,
+      "newIsCapExceptions": [],
+      "capIsNew": false,
+      "capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"]
+    }],
+    "no-extra-label": "error",
+    "no-label-var": "error",
+    "no-labels": "error",
+    "no-lone-blocks": "error",
+    "no-multi-assign": "error",
+    "no-multi-str": "error",
+    "no-return-assign": "error",
+    "no-script-url": "error",
+    "no-template-curly-in-string": "error",
+    "no-useless-computed-key": "error",
+    "object-shorthand": "error",
+    "operator-assignment": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "all"
+      }
+    ],
+    // Match airbnb: require object destructuring in variable declarations, but NOT array destructuring.
+    "prefer-destructuring": ["error", {
+      "VariableDeclarator": {"array": false, "object": true},
+      "AssignmentExpression": {"array": true, "object": false}
+    }, {"enforceForRenamedProperties": false}],
+    "prefer-exponentiation-operator": "error",
+    "prefer-numeric-literals": "error",
+    "prefer-object-spread": "error",
+    "prefer-promise-reject-errors": "error",
+    "prefer-regex-literals": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error",
+    "react/jsx-boolean-value": "error",
+    "react/jsx-curly-brace-presence": "error",
+    "react/jsx-fragments": "error",
+    "react/jsx-pascal-case": "error",
+    "react/no-redundant-should-component-update": "error",
+    "react/prefer-es6-class": "error",
+    "react/self-closing-comp": "error",
+    "react/state-in-constructor": "error",
+    "vars-on-top": "error",
+    "yoda": "error",
+    // --- nursery ---
+    "import/export": "error",
+    "no-restricted-exports": "error",
+    "react/require-render-return": "error",
+    // --- react automatic runtime (new JSX transform; was plugin:react/jsx-runtime) ---
+    "react/react-in-jsx-scope": "off",
+    // ===================================================================================
+    // TYPE-AWARE — requires `oxlint-tsgolint` installed and either `--type-aware` CLI flag
+    // or `"options": { "typeAware": true }` in the consumer's `.oxlintrc.json`.
+    // Without type-aware mode these rules are silently skipped (safe to have in base config).
+    // ===================================================================================
+    "typescript/consistent-return": "warn",   // was consistent-return (airbnb)
+    "typescript/dot-notation": "error",        // was @typescript-eslint/dot-notation
+    "typescript/only-throw-error": "error",    // was @typescript-eslint/only-throw-error
+    "typescript/return-await": ["error", "in-try-catch"], // was @typescript-eslint/return-await
+    // tsgolint auto-enables these 4 rules as "warn" regardless of config. They were not in the
+    // shared @minware/eslint-config. Pin them explicitly at "warn" so they surface as discoverable
+    // warnings without breaking CI. Promote to "error" per-repo as desired.
+    "typescript/no-floating-promises": "warn",
+    "typescript/await-thenable": "warn",
+    "typescript/no-for-in-array": "warn",
+    "typescript/unbound-method": "warn"
+    // ===================================================================================
+    // ROADMAP — not yet in oxlint. Enable by uncommenting when oxlint ships them.
+    // Listed under the proposed oxlint name.
+    // ===================================================================================
+    // -- not yet implemented by oxlint --
+    // "import/no-import-module-exports": "warn",
+    // "import/no-extraneous-dependencies": "error",
+    // "react/forbid-prop-types": "error",
+    // "react/jsx-no-bind": "error",
+    // "react/jsx-uses-react": "error",
+    // "react/jsx-uses-vars": "error",
+    // "react/no-deprecated": "error",
+    // "react/prefer-stateless-function": "error",
+    // "react/sort-comp": "error",
+    // "react/no-unused-prop-types": "error",
+    // "react/forbid-foreign-prop-types": "warn",
+    // "react/default-props-match-prop-types": "error",
+    // "react/no-unused-state": "error",
+    // "react/no-typos": "error",
+    // "react/destructuring-assignment": "error",
+    // "react/no-access-state-in-setstate": "error",
+    // "react/static-property-placement": "error",
+    // "react/function-component-definition": "error",
+    // "react/prefer-exact-props": "error",
+    // "react/no-arrow-function-lifecycle": "error",
+    // "react/no-invalid-html-attribute": "error",
+    // "react/no-unused-class-component-methods": "error",
+    // "strict": "error",
+    // "import/order": "error",
+    // "import/no-useless-path-segments": "error",
+    // "import/no-relative-packages": "error",
+    // "no-undef-init": "error",
+    // "one-var": "error",
+    // "no-unreachable-loop": "error",
+    // "no-octal": "error",
+    // "no-octal-escape": "error",
+  },
+  // Test files: relax a few jest assertions (matches @minware/eslint-config).
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.{js,jsx,ts,tsx}",
+        "**/*.spec.{js,jsx,ts,tsx}",
+        "test/**",
+        "tests/**",
+        "**/__tests__/**",
+        "**/__mocks__/**"
+      ],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "jest/no-conditional-expect": "off",
+        "jest/valid-expect": "off",
+        "jest/valid-expect-in-promise": "off",
+        // net-new oxlint correctness rule (not in the old config); opinionated, not a bug.
+        "jest/prefer-snapshot-hint": "off"
+      }
+    }
+  ]
+}
