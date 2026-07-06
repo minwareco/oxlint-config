@@ -64,9 +64,7 @@
     "no-shadow-restricted-names": "error",
     "no-sparse-arrays": "error",
     "no-unsafe-finally": "error",
-    // Disabled: rule doesn't understand TypeScript `as Type` assertions, producing false
-    // positives when a non-optional `as Type` cast is used after an optional chain.
-    "no-unsafe-optional-chaining": "off",
+    "no-unsafe-optional-chaining": ["error", {"disallowArithmeticOperators": true}],
     "no-unused-expressions": [
       "error",
       {
