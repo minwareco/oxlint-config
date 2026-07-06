@@ -248,7 +248,7 @@
     "curly": "error",
     "default-case-last": "error",
     "default-param-last": "error",
-    "func-names": "warn",
+    "func-names": "off",
     "grouped-accessor-pairs": "error",
     "import/first": "error",
     "import/newline-after-import": "error",
