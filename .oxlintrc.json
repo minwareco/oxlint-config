@@ -65,6 +65,7 @@
     "no-sparse-arrays": "error",
     "no-unsafe-finally": "error",
     "no-unsafe-optional-chaining": ["error", {"disallowArithmeticOperators": true}],
+    "no-unreachable-loop": "error",
     "no-unused-expressions": [
       "error",
       {
