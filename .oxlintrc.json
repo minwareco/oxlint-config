@@ -305,6 +305,22 @@
     "react/state-in-constructor": "error",
     "vars-on-top": "error",
     "yoda": "error",
+    // --- style: type-only imports ---
+    // An import referenced only in type position must be annotated, so TypeScript erases it
+    // instead of emitting a runtime import of a module that is never used at runtime.
+    // The two rules are coupled and must name the same form: consistent-type-imports enforces
+    // THAT a type-only import is annotated, consistent-type-specifier-style enforces HOW.
+    // Both use the inline form (`import { type Foo, bar } from 'x'`), which keeps one import
+    // declaration per module instead of splitting a mixed import into a type line and a value
+    // line. Both are syntax-only — they do not need oxlint-tsgolint or `--type-aware`.
+    // disallowTypeAnnotations is off (it defaults to on): it bans `typeof import('m')`, which is
+    // the only way to name a whole module's shape — used for lazily-loaded module handles and for
+    // `jest.requireActual<typeof import('m')>`. A static `import type` cannot express either.
+    "typescript/consistent-type-imports": [
+      "error",
+      {"fixStyle": "inline-type-imports", "disallowTypeAnnotations": false}
+    ],
+    "import/consistent-type-specifier-style": ["error", "prefer-inline"],
     // --- nursery ---
     "import/export": "error",
     "no-restricted-exports": "error",
