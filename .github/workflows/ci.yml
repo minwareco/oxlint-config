@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [ main ]
+
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      # Fails if package.json and package-lock.json disagree, which is how a version
+      # bump that only touched package.json used to reach main unnoticed.
+      - run: npm ci --no-progress --no-audit
+
+      # Lints fixtures/ with this config, so a rule name, option or severity that
+      # oxlint does not accept fails here instead of in a consuming repo.
+      - run: npm test
+
+      # The package ships two files and nothing else builds them, so a `files`
+      # regression would publish a config that consumers cannot extend.
+      - name: Verify the published tarball carries the config
+        run: |
+          npm pack --silent --pack-destination /tmp >/dev/null
+          tar -tzf /tmp/minware-oxlint-config-*.tgz > /tmp/packed.txt
+          cat /tmp/packed.txt
+          for f in package/.oxlintrc.json package/index.js; do
+            grep -qx "$f" /tmp/packed.txt || { echo "::error::$f missing from the published tarball"; exit 1; }
+          done
