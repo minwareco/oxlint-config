@@ -39,9 +39,15 @@ the list of rules we lost in the move.
      "format:check": "dprint check",
      "lint": "run-p -c --aggregate-output \"format:check\" \"lint:oxlint\"",
      "lint:oxlint": "oxlint --type-aware",
-     "lint:fix": "run-s \"format\" \"lint:oxlint -- --fix\""
+     "lint:fix": "run-s -c \"lint:oxlint -- --fix\" \"format\""
    }
    ```
+
+   **dprint must run after oxlint, not before.** oxlint's fixers are not formatters: rewriting an
+   import to `import  { type Foo } from 'x'` leaves a double space that `format:check` then fails
+   on. Running dprint last cleans up whatever the fixers emit. The `-c` matters too: without it
+   `run-s` stops at the first failure, so an unfixable lint error would skip formatting entirely.
+   With it every task runs and `run-s` still exits non-zero if any of them failed.
 
 4. Remove ESLint: delete `.eslintrc*` and `.eslintignore`, and drop `eslint`, `eslint-config-*`,
    `eslint-plugin-*`, `@typescript-eslint/*`, and `eslint-plugin-dprint-integration` from
@@ -95,8 +101,7 @@ Both rules autofix, so the bump is mechanical:
 
 ```bash
 npm i -D @minware/oxlint-config@latest
-npm run lint:fix   # rewrites every type-only import
-npm run format     # lint:fix runs dprint BEFORE oxlint, so the fixer's output is not yet formatted
+npm run lint:fix   # rewrites every type-only import, then formats
 ```
 
 One case is left over for you to resolve by hand. A file that already split its type imports into a
