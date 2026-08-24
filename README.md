@@ -90,10 +90,15 @@ not reported: `import type Cfg from './cfg'`, `import type * as NS from './ns'`.
 
 Both rules are syntax-only — they run without `oxlint-tsgolint` and without `--type-aware`.
 
-`typescript/consistent-type-imports` also has a `disallowTypeAnnotations` option, on by default,
-that bans `typeof import('m')`. It is turned **off** here: `typeof import('m')` is the only way to
-name a whole module's shape, and it is how lazily-loaded module handles and
-`jest.requireActual<typeof import('m')>` are typed. A static `import type` cannot express either.
+`typescript/consistent-type-imports` is configured with `disallowTypeAnnotations: false`,
+overriding its default of `true`. At the default it bans `import()` inside a type, which also
+rejects `typeof import('m')`. That form names the type of a whole module object, and `import type`
+has no equivalent for it:
+
+```ts
+let pool: typeof import('./workerPool');
+jest.requireActual<typeof import('./labelFormatUtils')>('./labelFormatUtils');
+```
 
 #### Upgrading a repo to this version
 
