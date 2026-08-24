@@ -305,6 +305,22 @@
     "react/state-in-constructor": "error",
     "vars-on-top": "error",
     "yoda": "error",
+    // --- style: type-only imports ---
+    // An import referenced only in type position must be annotated, so TypeScript erases it
+    // instead of emitting a runtime import of a module that is never used at runtime.
+    // The two rules are coupled and must name the same form: consistent-type-imports enforces
+    // THAT a type-only import is annotated, consistent-type-specifier-style enforces HOW.
+    // Both use the inline form (`import { type Foo, bar } from 'x'`), which keeps one import
+    // declaration per module instead of splitting a mixed import into a type line and a value
+    // line. Both are syntax-only — they do not need oxlint-tsgolint or `--type-aware`.
+    // disallowTypeAnnotations is false, which allows `import()` inside a type. The codebase needs
+    // `typeof import('m')` (as in `let pool: typeof import('./workerPool')`): it names the type of
+    // a whole module object, and `import type` has no equivalent for it.
+    "typescript/consistent-type-imports": [
+      "error",
+      {"fixStyle": "inline-type-imports", "disallowTypeAnnotations": false}
+    ],
+    "import/consistent-type-specifier-style": ["error", "prefer-inline"],
     // --- nursery ---
     "import/export": "error",
     "no-restricted-exports": "error",

@@ -39,9 +39,13 @@ the list of rules we lost in the move.
      "format:check": "dprint check",
      "lint": "run-p -c --aggregate-output \"format:check\" \"lint:oxlint\"",
      "lint:oxlint": "oxlint --type-aware",
-     "lint:fix": "run-s \"format\" \"lint:oxlint -- --fix\""
+     "lint:fix": "run-s -c \"lint:oxlint -- --fix\" \"format\""
    }
    ```
+
+   dprint runs **after** oxlint because oxlint's fixers are not formatters and leave their output
+   unformatted. `-c` keeps formatting from being skipped when a lint error is left unfixed, while
+   still exiting non-zero.
 
 4. Remove ESLint: delete `.eslintrc*` and `.eslintignore`, and drop `eslint`, `eslint-config-*`,
    `eslint-plugin-*`, `@typescript-eslint/*`, and `eslint-plugin-dprint-integration` from
