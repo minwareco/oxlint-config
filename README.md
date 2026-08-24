@@ -90,10 +90,9 @@ not reported: `import type Cfg from './cfg'`, `import type * as NS from './ns'`.
 
 Both rules are syntax-only — they run without `oxlint-tsgolint` and without `--type-aware`.
 
-`typescript/consistent-type-imports` is configured with `disallowTypeAnnotations: false`,
-overriding its default of `true`. At the default it bans `import()` inside a type, which also
-rejects `typeof import('m')`. That form names the type of a whole module object, and `import type`
-has no equivalent for it:
+`typescript/consistent-type-imports` sets `disallowTypeAnnotations: false`, which allows
+`import()` inside a type. The codebase needs `typeof import('m')`: it names the type of a whole
+module object, and `import type` has no equivalent for it:
 
 ```ts
 let pool: typeof import('./workerPool');
