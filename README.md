@@ -43,11 +43,9 @@ the list of rules we lost in the move.
    }
    ```
 
-   **dprint must run after oxlint, not before.** oxlint's fixers are not formatters: rewriting an
-   import to `import  { type Foo } from 'x'` leaves a double space that `format:check` then fails
-   on. Running dprint last cleans up whatever the fixers emit. The `-c` matters too: without it
-   `run-s` stops at the first failure, so an unfixable lint error would skip formatting entirely.
-   With it every task runs and `run-s` still exits non-zero if any of them failed.
+   dprint runs **after** oxlint because oxlint's fixers are not formatters and leave their output
+   unformatted. `-c` keeps formatting from being skipped when a lint error is left unfixed, while
+   still exiting non-zero.
 
 4. Remove ESLint: delete `.eslintrc*` and `.eslintignore`, and drop `eslint`, `eslint-config-*`,
    `eslint-plugin-*`, `@typescript-eslint/*`, and `eslint-plugin-dprint-integration` from
@@ -63,65 +61,6 @@ when you install `oxlint-tsgolint` (step 1 above) and pass `--type-aware` to the
 
 Per-repo opt-in rule (not in base): `typescript/no-unnecessary-condition` — add it to the
 repo's `.oxlintrc.json` `rules`, e.g. for `app/`.
-
-### Type-only imports
-
-An import referenced only in type position must be annotated, so TypeScript erases it instead of
-emitting a runtime import of a module that is never used at runtime. Two rules enforce this, and
-they are set to the same form:
-
-- `typescript/consistent-type-imports` (`fixStyle: inline-type-imports`) — requires the annotation.
-- `import/consistent-type-specifier-style` (`prefer-inline`) — requires it to be **inline**.
-
-```ts
-// ✗ Sum is only a type, but the import is not annotated
-import { add, Sum } from './sum';
-
-// ✗ annotated, but hoisted into a second declaration for the same module
-import type { Sum } from './sum';
-import { add } from './sum';
-
-// ✓ one declaration per module, type specifiers inline
-import { add, type Sum } from './sum';
-```
-
-Default and namespace imports have no inline form, so they keep the `import type` prefix and are
-not reported: `import type Cfg from './cfg'`, `import type * as NS from './ns'`.
-
-Both rules are syntax-only — they run without `oxlint-tsgolint` and without `--type-aware`.
-
-`typescript/consistent-type-imports` sets `disallowTypeAnnotations: false`, which allows
-`import()` inside a type. The codebase needs `typeof import('m')`: it names the type of a whole
-module object, and `import type` has no equivalent for it:
-
-```ts
-let pool: typeof import('./workerPool');
-jest.requireActual<typeof import('./labelFormatUtils')>('./labelFormatUtils');
-```
-
-#### Upgrading a repo to this version
-
-Both rules autofix, so the bump is mechanical:
-
-```bash
-npm i -D @minware/oxlint-config@latest
-npm run lint:fix   # rewrites every type-only import, then formats
-```
-
-One case is left over for you to resolve by hand. A file that already split its type imports into a
-separate declaration —
-
-```ts
-import { sql } from 'slonik';
-import type { ValueExpression } from 'slonik';
-```
-
-— becomes two value-form imports of the same module once the specifiers go inline, which
-`import/no-duplicates` then reports. Merge them into one declaration:
-
-```ts
-import { sql, type ValueExpression } from 'slonik';
-```
 
 ### ⚠️ Plugins must be repeated, not just extended
 
